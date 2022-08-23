@@ -10,4 +10,4 @@ This is a **sample** app for the ETC5523 Assessment 1.
 The goal of the app is to analyse the bird count and it's trend and to study if there is a
 correlation between the hours spent on watching birds and count of birds.
 
-The link to the app can be found at [https://ebsmonash.shinyapps.io/etc5523-assessment1-sample/](https://ebsmonash.shinyapps.io/etc5523-assessment1-sample/)
+The link to the app can be found at [https://adarsh-more.shinyapps.io/shiny--Adarsh098/](https://ebsmonash.shinyapps.io/etc5523-assessment1-sample/)
