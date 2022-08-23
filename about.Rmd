@@ -11,7 +11,7 @@ the data source is from *"https://github.com/rfordatascience/tidytuesday/tree/ma
 
 The purpose of the app is to:
 
-1. Compare the most counted birds.
+1. Compare the most birds counted.
 2. show the trend of birds counted per hour.
 3. study the most number of birds watched since 1921.
 4. To analyse if the number of birds watched increases as number 
