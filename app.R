@@ -2,6 +2,7 @@ library(shiny)
 library(shinythemes)
 library(tidyverse)
 library(lubridate)
+library(plotly)
 
 bird_counts <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-06-18/bird_counts.csv")
 
@@ -24,7 +25,7 @@ ui <- fluidPage(theme = shinytheme("cerulean"),
                   navbarPage(
                     "Birds Counted in Christmas",
 
-                    tabPanel("Panel 1",
+                    tabPanel("Most Counted Birds",
                              column(width = 3,
                                     selectInput(inputId = "Panel_1",
                                                 label = "Select Species",
@@ -38,37 +39,25 @@ ui <- fluidPage(theme = shinytheme("cerulean"),
                              plotOutput("myplot")),
 
 
-
-                    tabPanel("Panel 2",
-                             column(width = 4,
-                                    selectizeInput(inputId = "Panel_2",
-                                                   "Select Species",
-                                                   choices = species)),
-
-                             h3("Birds counted per hour since 1921"),
-                             plotOutput("myplot2")),
-
-
-
-                    tabPanel("Panel 3",
+                    tabPanel("Yearly bird count",
                              column(width = 4,
                                     selectizeInput(inputId = "Panel_3",
                                                    "Select Species",
                                                    choices = species)),
 
                              h3("Trend of birds counted since 1921"),
-                             plotOutput("myplot3")),
+                             plotlyOutput("myplot3")),
 
 
 
-                    tabPanel("Panel 4",
+                    tabPanel("Correlation between bird count and hours",
                              column(width = 4,
                                     selectizeInput(inputId = "Panel_4",
                                                    "Select Species",
                                                    choices = species)),
 
                              h3("Correlation between bird count and hours"),
-                             plotOutput("myplot4")),
+                             plotlyOutput("myplot4")),
 
 
                   )
@@ -90,40 +79,18 @@ server <- function(input, output, session) {
 
   output$myplot <- renderPlot({
 
-    ggplot(data_1(),
+    a <- ggplot(data_1(),
            aes(x = how_many_counted,
                y = species,
                fill = species)) +
       geom_col() +
       theme_bw() +
       theme(legend.position = "bottom") +
-      scale_fill_brewer(palette = "Dark2") +
       theme(text = element_text(size = 20)) +
       labs(x = "Birds Counted",
            y = "Bird Name")
-  })
+    a
 
-
-  data_2 <- reactive({
-
-    req(input$Panel_2)
-    df2 <- panel2 %>%
-      select(species, year, counts_hr) %>%
-      filter(species %in% input$Panel_2) %>%
-      group_by(species, year)
-  })
-
-  output$myplot2 <- renderPlot({
-
-    g2 <- ggplot(data_2(), aes(x = year,
-                               y = counts_hr,
-                               fill = species))
-    g2 +  geom_col() +
-      theme_bw() +
-      theme(legend.position = "bottom") +
-      theme(text = element_text(size = 20)) +
-      labs(x = "Year",
-           y = "Birds counted per hr")
   })
 
 
@@ -134,18 +101,19 @@ server <- function(input, output, session) {
       group_by(species, year)
   })
 
-  output$myplot3 <- renderPlot({
+  output$myplot3 <- renderPlotly({
 
     g3 <- ggplot(data_3(),
                  aes(x = year,
                      y = how_many_counted,
-                     color = species))
-    g3 + geom_line(size = 2) +
+                     color = species)) +
+      geom_line() +
       theme_bw() +
       theme(legend.position = "bottom") +
       theme(text = element_text(size = 20)) +
       labs(x = "Year",
            y = "Number of Birds Counted")
+    ggplotly(g3)
   })
 
 
@@ -156,12 +124,12 @@ server <- function(input, output, session) {
       filter(species %in% input$Panel_4)
   })
 
-  output$myplot4 <- renderPlot({
+  output$myplot4 <- renderPlotly({
 
     g4 <- ggplot(data_4(),
                  aes(x = total_hours,
-                     y = how_many_counted))
-    g4 + geom_point() +
+                     y = how_many_counted)) +
+      geom_point() +
       geom_smooth(method = "lm",
                   se = FALSE) +
       theme_bw() +
@@ -169,6 +137,7 @@ server <- function(input, output, session) {
       theme(text = element_text(size = 20)) +
       labs(x = "Hours",
            y = "Bird Count")
+      ggplotly(g4)
   })
 
 
